@@ -14,7 +14,7 @@ jobs:
     name: DocKit
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Select the newest Xcode
         run: |
           XCODE="$(ls -d /Applications/Xcode*.app | sort -V | tail -1)"
@@ -28,10 +28,10 @@ jobs:
     name: Scan to me with this DocKit
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           path: doc-kit
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: Hank1210/scan-to-me
           path: scan-to-me
@@ -52,10 +52,10 @@ jobs:
     name: PDF to me with this DocKit
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           path: doc-kit
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: Hank1210/pdf-to-me
           path: pdf-to-me
