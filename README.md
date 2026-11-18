@@ -54,10 +54,11 @@ new major versions separately.
 swift test
 ```
 
-To work on DocKit and one of the apps at the same time, point the app at your local copy:
+To work on DocKit and one of the apps at the same time, point the app at your local copy (the package identity
+is `doc-kit`, taken from the repository URL):
 
 ```sh
-swift package edit DocKit --path ../doc-kit
+swift package edit doc-kit --path ../doc-kit
 ```
 
 Rules for contributions:
