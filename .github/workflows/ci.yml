@@ -28,6 +28,9 @@ jobs:
   scan-to-me:
     name: Scan to me with this DocKit
     runs-on: xcode-27
+    env:
+      # Einige Tests von Scan to me erwarten Datumsangaben in deutscher Zeit; der Runner läuft auf UTC.
+      TZ: Europe/Berlin
     steps:
       - uses: actions/checkout@v7
         with:

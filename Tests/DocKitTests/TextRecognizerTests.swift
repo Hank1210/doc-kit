@@ -9,6 +9,7 @@ final class TextRecognizerTests: XCTestCase {
     }
 
     func testRecognizesGermanTestPage() throws {
+        try requireTextRecognition()
         let page = try TextRecognizer.recognize(TestImages.page(heading: "Stromrechnung Mai", line: "Test-Scanner Seite 1"))
         XCTAssertTrue(page.text.contains("Stromrechnung"), page.text)
         XCTAssertTrue(page.text.contains("Test-Scanner"), page.text)
@@ -21,6 +22,7 @@ final class TextRecognizerTests: XCTestCase {
     }
 
     func testRecognizesJPEGFileWithTimeout() async throws {
+        try requireTextRecognition()
         let url = try TestImages.jpegFile(TestImages.page(heading: "Kontoauszug", line: "Seite 2"))
         defer { try? FileManager.default.removeItem(at: url) }
         let page = try await TextRecognizer.recognize(jpegURL: url, timeout: TextRecognizer.pageTimeout)
