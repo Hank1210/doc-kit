@@ -12,12 +12,13 @@ permissions:
 jobs:
   dockit:
     name: DocKit
-    runs-on: macos-latest
+    runs-on: xcode-27
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
+      # Neueste installierte Xcode-Version ohne Beta; Scan to me braucht das SDK von macOS 27.
       - name: Select the newest Xcode
         run: |
-          XCODE="$(ls -d /Applications/Xcode*.app | sort -V | tail -1)"
+          XCODE="$(ls -d /Applications/Xcode_*.app | grep -iv beta | sort -V | tail -1)"
           sudo xcode-select -s "$XCODE"
           xcodebuild -version
           swift --version
@@ -26,18 +27,19 @@ jobs:
 
   scan-to-me:
     name: Scan to me with this DocKit
-    runs-on: macos-latest
+    runs-on: xcode-27
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           path: doc-kit
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: Hank1210/scan-to-me
           path: scan-to-me
+      # Neueste installierte Xcode-Version ohne Beta; Scan to me braucht das SDK von macOS 27.
       - name: Select the newest Xcode
         run: |
-          XCODE="$(ls -d /Applications/Xcode*.app | sort -V | tail -1)"
+          XCODE="$(ls -d /Applications/Xcode_*.app | grep -iv beta | sort -V | tail -1)"
           sudo xcode-select -s "$XCODE"
           xcodebuild -version
           swift --version
@@ -50,23 +52,24 @@ jobs:
 
   pdf-to-me:
     name: PDF to me with this DocKit
-    runs-on: macos-latest
+    runs-on: xcode-27
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           path: doc-kit
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: Hank1210/pdf-to-me
           path: pdf-to-me
+      # Neueste installierte Xcode-Version ohne Beta; Scan to me braucht das SDK von macOS 27.
       - name: Select the newest Xcode
         run: |
-          XCODE="$(ls -d /Applications/Xcode*.app | sort -V | tail -1)"
+          XCODE="$(ls -d /Applications/Xcode_*.app | grep -iv beta | sort -V | tail -1)"
           sudo xcode-select -s "$XCODE"
           xcodebuild -version
           swift --version
       - name: Cache qpdf
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: pdf-to-me/Vendor/qpdf
           key: qpdf-${{ runner.os }}-${{ hashFiles('pdf-to-me/Scripts/fetch-qpdf.sh') }}
