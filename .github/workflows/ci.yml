@@ -1,0 +1,81 @@
+name: CI
+
+# Prüft DocKit selbst und beide Apps mit genau diesem DocKit-Stand. Bricht eine Änderung eine App, schlägt die CI fehl.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  dockit:
+    name: DocKit
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select the newest Xcode
+        run: |
+          XCODE="$(ls -d /Applications/Xcode*.app | sort -V | tail -1)"
+          sudo xcode-select -s "$XCODE"
+          xcodebuild -version
+          swift --version
+      - name: Run tests
+        run: swift test
+
+  scan-to-me:
+    name: Scan to me with this DocKit
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: doc-kit
+      - uses: actions/checkout@v4
+        with:
+          repository: Hank1210/scan-to-me
+          path: scan-to-me
+      - name: Select the newest Xcode
+        run: |
+          XCODE="$(ls -d /Applications/Xcode*.app | sort -V | tail -1)"
+          sudo xcode-select -s "$XCODE"
+          xcodebuild -version
+          swift --version
+      - name: Use this DocKit
+        working-directory: scan-to-me/ScanToMe
+        run: swift package edit doc-kit --path "$GITHUB_WORKSPACE/doc-kit"
+      - name: Run tests
+        working-directory: scan-to-me/ScanToMe
+        run: swift test
+
+  pdf-to-me:
+    name: PDF to me with this DocKit
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: doc-kit
+      - uses: actions/checkout@v4
+        with:
+          repository: Hank1210/pdf-to-me
+          path: pdf-to-me
+      - name: Select the newest Xcode
+        run: |
+          XCODE="$(ls -d /Applications/Xcode*.app | sort -V | tail -1)"
+          sudo xcode-select -s "$XCODE"
+          xcodebuild -version
+          swift --version
+      - name: Cache qpdf
+        uses: actions/cache@v4
+        with:
+          path: pdf-to-me/Vendor/qpdf
+          key: qpdf-${{ runner.os }}-${{ hashFiles('pdf-to-me/Scripts/fetch-qpdf.sh') }}
+      - name: Build qpdf
+        working-directory: pdf-to-me
+        run: ./Scripts/fetch-qpdf.sh
+      - name: Use this DocKit
+        working-directory: pdf-to-me
+        run: swift package edit doc-kit --path "$GITHUB_WORKSPACE/doc-kit"
+      - name: Run tests
+        working-directory: pdf-to-me
+        run: swift test

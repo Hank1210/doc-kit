@@ -1,0 +1,7 @@
+version: 2
+updates:
+  # Versionen der GitHub Actions in .github/workflows; DocKit selbst hat keine Abhängigkeiten.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
