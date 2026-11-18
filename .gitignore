@@ -1,0 +1,13 @@
+# Build-Ergebnisse
+.build/
+.swiftpm/
+DerivedData/
+
+# Editoren
+.vscode/
+
+# macOS
+.DS_Store
+
+# Interne Arbeitsunterlagen und Arbeitsanweisungen für Claude Code (lokal)
+CLAUDE.md
