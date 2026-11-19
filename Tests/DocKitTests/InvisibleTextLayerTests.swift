@@ -59,6 +59,30 @@ final class InvisibleTextLayerTests: XCTestCase {
         XCTAssertEqual(try pixels(pdf(withText: true)), try pixels(pdf(withText: false)))
     }
 
+    /// Lange Zeile in hohem Kasten: Der ganze Text muss auslesbar bleiben. Früher wurde die Zeile waagerecht
+    /// gestaucht, und PDFKit ließ das Ende weg.
+    func testLongLineInTallBoxStaysComplete() throws {
+        let text = "Betrag: 1.234,56 € (inkl. 19 % MwSt.) zahlbar bis 30.11.2026"
+        for height in [0.02, 0.04, 0.06, 0.1] {
+            let output = NSMutableData()
+            var mediaBox = pageRect
+            let context = try XCTUnwrap(CGContext(consumer: XCTUnwrap(CGDataConsumer(data: output)), mediaBox: &mediaBox, nil))
+            context.beginPDFPage(nil)
+            InvisibleTextLayer.draw(RecognizedPage(lines: [
+                RecognizedLine(text: text, box: CGRect(x: 0.05, y: 0.7, width: 0.93, height: height)),
+            ]), over: pageRect, in: context)
+            context.endPDFPage()
+            context.closePDF()
+            let document = try XCTUnwrap(PDFDocument(data: output as Data))
+            let extracted = (document.page(at: 0)?.string ?? "").filter { !$0.isWhitespace }
+            XCTAssertEqual(extracted, text.filter { !$0.isWhitespace }, "Höhe \(height)")
+            // Der Text bleibt in seinem Kasten.
+            let page = try XCTUnwrap(document.page(at: 0))
+            let bounds = try XCTUnwrap(document.findString("2026", withOptions: []).first).bounds(for: page)
+            XCTAssertLessThanOrEqual(bounds.maxX, pageRect.width * 0.98 + 2, "Höhe \(height)")
+        }
+    }
+
     /// Zu kleine oder leere Kästen werden übersprungen, statt einen Fehler zu verursachen.
     func testSkipsDegenerateLines() throws {
         let output = NSMutableData()
